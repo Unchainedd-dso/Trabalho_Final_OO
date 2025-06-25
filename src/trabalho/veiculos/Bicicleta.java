@@ -1,9 +1,9 @@
 package trabalho.veiculos;
 
-public class Bicicleta extends Veiculo{
-    
-    public Bicicleta(int limiteKG, int limiteVolume){
-        super(limiteKG, limiteVolume);
+public class Bicicleta extends Veiculo {
+
+    public Bicicleta(String nome, int limiteKG, int limiteVolume) {
+        super(nome, limiteKG, limiteVolume);
     }
 
     @Override

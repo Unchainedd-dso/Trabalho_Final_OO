@@ -32,11 +32,22 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import trabalho.cliente.CadastroClientes;
+import trabalho.cliente.Cliente;
+import trabalho.veiculos.Bicicleta;
+import trabalho.veiculos.CadastroVeiculos;
+import trabalho.veiculos.Caminhao;
+import trabalho.veiculos.CaminhaoRefrigerado;
+import trabalho.veiculos.Motocicleta;
+import trabalho.veiculos.Veiculo;
+import trabalho.veiculos.VeiculoConvencional;
+
 public class Tela extends JFrame{
 
-    private CadastroDePessoa cdp;     
-    private JTable tblListaGeral, tblListaProfessor, tblListaAluno;
-    private DefaultTableModel tableModelGeral, tableModelProfessor, tableModelAluno;
+    private CadastroClientes cdc;
+    private CadastroVeiculos cdv;     
+    private JTable tblListaCliente, tblListaVeiculo;
+    private DefaultTableModel tableModelCliente, tableModelVeiculo;
     private JRadioButton jrbCliente, jrbVeiculo;
     private CardLayout cardLayoutAplicacao;
     private JPanel jpAplicacao;
@@ -46,7 +57,8 @@ public class Tela extends JFrame{
     public Tela() {
         super("Tela de cadastro");
 
-        cdp = new CadastroDePessoa();
+        cdc = new CadastroClientes();
+        cdv = new CadastroVeiculos();
 
         // Construção do layout da tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -185,61 +197,47 @@ public class Tela extends JFrame{
         JCheckBox jcbAtivo = new JCheckBox("Cadastro ativo");
         jcbAtivo.setSelected(true);
 
-        JButton btnAdicionar = new JButton("Adicionar");
-        
-        // Codificação da tabela Geral para garantir dinamicidade
-        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        String [] columnNames = {"Tipo","Matrícula", "Nome", "Idade", "Peso"};
-        tableModelGeral = new DefaultTableModel(columnNames, 0);
+        JButton btnAdicionar = new JButton("Adicionar");     
 
-        tblListaGeral = new JTable(tableModelGeral);
-        tblListaGeral.setPreferredScrollableViewportSize(new Dimension(300, 50));
-        tblListaGeral.setFillsViewportHeight(true);
-        JScrollPane spTableGeral = new JScrollPane(tblListaGeral);
+        // Codificação da tabela Clientes para garantir dinamicidade
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        String [] columnNamesCliente = {"Nome", "Telefone", "CPF", "Endereço"};
+        tableModelCliente = new DefaultTableModel(columnNamesCliente, 0);
+
+        tblListaCliente = new JTable(tableModelCliente);
+        tblListaCliente.setPreferredScrollableViewportSize(new Dimension(300, 50));
+        tblListaCliente.setFillsViewportHeight(true);
+        JScrollPane spTableCliente = new JScrollPane(tblListaCliente);
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=      
 
-        // Codificação da tabela Geral para garantir dinamicidade
+        // Codificação da tabela Veiculos para garantir dinamicidade
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        String [] columnNamesProfessor = {"Matrícula", "Nome", "Idade", "Peso", "Salario"};
-        tableModelProfessor = new DefaultTableModel(columnNamesProfessor, 0);
+        String [] columnNamesVeiculo = {"Nome", "Placa", "Limite de Peso", "Limite de Volume"};
+        tableModelVeiculo = new DefaultTableModel(columnNamesVeiculo, 0);
 
-        tblListaProfessor = new JTable(tableModelProfessor);
-        tblListaProfessor.setPreferredScrollableViewportSize(new Dimension(300, 50));
-        tblListaProfessor.setFillsViewportHeight(true);
-        JScrollPane spTableProfessor = new JScrollPane(tblListaProfessor);
-        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=      
-
-        // Codificação da tabela Geral para garantir dinamicidade
-        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        String [] columnNamesAluno = {"Matrícula", "Nome", "Idade", "Peso", "Curso"};
-        tableModelAluno = new DefaultTableModel(columnNamesAluno, 0);
-
-        tblListaAluno = new JTable(tableModelAluno);
-        tblListaAluno.setPreferredScrollableViewportSize(new Dimension(300, 50));
-        tblListaAluno.setFillsViewportHeight(true);
-        JScrollPane spTableAluno = new JScrollPane(tblListaAluno);
+        tblListaVeiculo = new JTable(tableModelVeiculo);
+        tblListaVeiculo.setPreferredScrollableViewportSize(new Dimension(300, 50));
+        tblListaVeiculo.setFillsViewportHeight(true);
+        JScrollPane spTableVeiculo = new JScrollPane(tblListaVeiculo);
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=      
 
         // Cria tabs
-        JTabbedPane tbPessoas = new JTabbedPane();
-        // Tab Geral
-        tbPessoas.addTab("Geral", spTableGeral);
-        // Tab Professor
-        tbPessoas.addTab("Professores", spTableProfessor);
-        // Tab Aluno
-        tbPessoas.addTab("Alunos", spTableAluno);
-        
+        JTabbedPane tbCadastros = new JTabbedPane();
+        // Tab Clientes
+        tbCadastros.addTab("Clientes", spTableCliente);
+        // Tab Veículos
+        tbCadastros.addTab("Veículos", spTableVeiculo);
+
         this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-        // this.add(l1);
-        // this.add(l2);
-        // this.add(l3);
-        // this.add(l4);
         this.add(jpAplicacao);
         this.add(l5);
         this.add(jcbAtivo);
         this.add(btnAdicionar);
-        //this.add(spTableGeral);           
-        this.add(tbPessoas);           
+        //this.add(spTableGeral);
+        this.add(tbCadastros);
+
+        // Carrega os dados dos arquivos já presentes depois da inicialização de TableModelCliente e TableModelVeiculo
+        carregaDadosDoArquivo(cdc, cdv);
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         // Elaboração de um menu inicial
@@ -253,7 +251,7 @@ public class Tela extends JFrame{
 
         // Inicialização de componentes
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        carregaDadosDoArquivo(cdp);
+        // carregaDadosDoArquivo(cdp);
 
         // Definição da interação na tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -297,25 +295,49 @@ public class Tela extends JFrame{
                     cpf = tfCPF.getText().trim();
                     endereco = tfEndereco.getText().trim();
 
-                    if (nome.isEmpty() || telefone.isEmpty() || cpf.isEmpty() || endereco.isEmpty()) {
+
+                    // Os parâmetros obrigatórios para Cliente
+                    if (nome.isEmpty() || telefone.isEmpty()) {
                         JOptionPane.showMessageDialog(this, "Todos os campos do Cliente devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                         return;
+                    }else{
+                        // Cria um novo Cliente e adiciona ao CadastroDeClientes
+                        // CPF e endereço podem ser String vazias
+                        Cliente cliente = new Cliente(nome, telefone, cpf, endereco);
+                        cdc.adicionaCliente(cliente);
                     }
-
-                    // Aqui você pode criar e adicionar um objeto Cliente, se existir
-                    // Exemplo:
-                    // Cliente cliente = new Cliente(nome, telefone, cpf, endereco, cadastroAtivo);
-                    // cdp.adicionaPessoa(cliente);
-
                 } else if (jrbVeiculo.isSelected()) {
                     nomeV = tfNomeV.getText().trim();
                     placa = tfPlaca.getText().trim();
                     limitePeso = tfLimitePeso.getText().trim();
                     limiteVolume = tfLimiteVolume.getText().trim();
 
-                    if (nomeV.isEmpty() || placa.isEmpty() || limitePeso.isEmpty() || limiteVolume.isEmpty()) {
+                    if (nomeV.isEmpty() || placa.isEmpty() || limitePeso.isEmpty() || limiteVolume.isEmpty() || bgTipoVeiculo.getSelection() == null) {
                         JOptionPane.showMessageDialog(this, "Todos os campos do Veículo devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                         return;
+                    }
+                    else{   
+                        if(jcbBicicleta.isSelected()){
+                            // Cria uma Bicicleta
+                            Bicicleta bicicleta = new Bicicleta(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume));
+                            cdv.adicionaVeiculo(bicicleta);
+                        } else if(jcbMotocicleta.isSelected()){
+                            // Cria um novo Veículo Motocicleta
+                            Motocicleta motocicleta = new Motocicleta(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
+                            cdv.adicionaVeiculo(motocicleta);
+                        } else if(jcbVeiculoConvencional.isSelected()){
+                            // Cria um novo Veículo Convencional
+                            VeiculoConvencional veiculoConvencional = new VeiculoConvencional(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
+                            cdv.adicionaVeiculo(veiculoConvencional);
+                        } else if(jcbCaminhao.isSelected()){
+                            // Cria um novo Caminhão
+                            Caminhao caminhao = new Caminhao(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
+                            cdv.adicionaVeiculo(caminhao);
+                        } else if(jcbCaminhaoRefrigerado.isSelected()){
+                            // Cria um novo Caminhão Refrigerado
+                            CaminhaoRefrigerado caminhaoRefrigerado = new CaminhaoRefrigerado(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
+                            cdv.adicionaVeiculo(caminhaoRefrigerado);
+                        }
                     }
 
                     // Aqui você pode criar e adicionar um objeto Veiculo, se existir
@@ -325,18 +347,25 @@ public class Tela extends JFrame{
 
                 }
 
-                updateTables(cdp);
+                updateTables(cdv, cdc);
             }
         );
 
         // Ação associada ao menu Salvar
         miSalvar.addActionListener( al -> {
-            try {
-                salvarEmArquivo();              
-            } catch (Exception e) {
-                System.out.println("Erro ao salvar os dados no arquivo");
+            if(jrbCliente.isSelected()){
+                try {
+                    salvarEmArquivoCliente();
+                } catch (Exception e) {
+                    System.out.println("Erro ao salvar os dados dos clientes no arquivo");
+                }
+            } else if(jrbVeiculo.isSelected()){
+                try {
+                    salvarEmArquivoVeiculos();
+                } catch (Exception e) {
+                    System.out.println("Erro ao salvar os dados dos veículos no arquivo");
+                }
             }
-
         });
 
         //Ação associada ao fechamento da janela
@@ -355,14 +384,30 @@ public class Tela extends JFrame{
 
     }
 
-    private void salvarEmArquivo() throws IOException{
-        PrintWriter pw = new PrintWriter("data.dat");
-        pw.println("#tipo;matricula;nome;idade;peso;ativo;extra");
-        for(Pessoa p: cdp.pessoal()){
-            if(p instanceof Professor)
-                pw.println("p;"+p.getMatricula()+";"+p.getNome()+";"+p.getIdade()+";"+p.getPeso()+";"+p.getAtivo()+";"+((Professor)p).getSalario());
-            else
-                pw.println("a;"+p.getMatricula()+";"+p.getNome()+";"+p.getIdade()+";"+p.getPeso()+";"+p.getAtivo()+";"+((Aluno)p).getCurso());
+    private void salvarEmArquivoVeiculos() throws IOException{
+        PrintWriter pw = new PrintWriter("data_veiculos.dat");
+        pw.println("#nome;placa;limiteDePeso;limiteDeVolume;tipo");
+        for(Veiculo v: cdv.veiculos()){
+            if(v instanceof Bicicleta)
+                // Bicicleta não tem placa
+                pw.println(v.getNome()+";"+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";Bicicleta");
+            else if(v instanceof Motocicleta)
+                pw.println(v.getNome()+";"+((Motocicleta)v).getPlaca()+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";Motocicleta");
+            else if(v instanceof VeiculoConvencional)
+                pw.println(v.getNome()+";"+((VeiculoConvencional)v).getPlaca()+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";VeiculoConvencional");
+            else if(v instanceof Caminhao)
+                pw.println(v.getNome()+";"+((Caminhao)v).getPlaca()+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";Caminhao");
+            else if(v instanceof CaminhaoRefrigerado)
+                pw.println(v.getNome()+";"+((CaminhaoRefrigerado)v).getPlaca()+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";CaminhaoRefrigerado");
+        }           
+        pw.close();
+    }
+
+    private void salvarEmArquivoCliente() throws IOException{
+        PrintWriter pw = new PrintWriter("data_clientes.dat");
+        pw.println("#nome;telefone;cpf;endereco");
+        for(Cliente c: cdc.clientes()){
+            pw.println(c.getNome()+";"+c.getTelefone()+";"+c.getCpf()+";"+c.getEndereco());
         }           
         pw.close();
     }
@@ -372,23 +417,28 @@ public class Tela extends JFrame{
         public void windowClosing(WindowEvent e) {
             super.windowClosing(e);
             int opcao = JOptionPane.showConfirmDialog(Tela.this,"A tela está sendo fechada","Fechar a janela?", JOptionPane.YES_NO_OPTION);
-
-            if(opcao==JOptionPane.YES_OPTION){
+            if(jrbCliente.isSelected()){
                 try {
-                    salvarEmArquivo();    
-                } catch (Exception l) {
-                    System.out.println("Erro durante o fechamento do software. \n  O arquivo não pode ser salvo");
-                }            
-                System.exit(0);
+                    salvarEmArquivoCliente();
+                } catch (Exception error) {
+                    System.out.println("Erro ao salvar os dados dos clientes no arquivo");
+                }
+            } else if(jrbVeiculo.isSelected()){
+                try {
+                    salvarEmArquivoVeiculos();
+                } catch (Exception error) {
+                    System.out.println("Erro ao salvar os dados dos veículos no arquivo");
+                }
             }
+            System.exit(opcao);
         }
     }
 
-    private void carregaDadosDoArquivo(CadastroDePessoa lcpd){
+    private void carregaDadosDoArquivo(CadastroClientes cadastroDeClientes, CadastroVeiculos cadastroDeVeiculos) {
 
         BufferedReader reader;
         try {
-            Path path1 = Paths.get("data.dat");
+            Path path1 = Paths.get("data_clientes.dat");
             reader = Files.newBufferedReader(path1, Charset.forName("utf8"));
             String line = null;
             // primeira linha apresenta a ordem dos campos disponiveis
@@ -396,62 +446,103 @@ public class Tela extends JFrame{
 
             while((line=reader.readLine())!=null){
                 String data [] = line.split(";");
-                String tipo = data[0].trim();
-                String matricula = data[1].trim();
-                String nome = data[2].trim();
-                String strIdade = data[3].trim();
-                String strPeso = data[4].trim();
-                String strAtivo = data[5].trim();
-                String strOutro = data[6].trim();
-
-                Pessoa p;
-                if(tipo.trim().toLowerCase().equals("p"))
-                    p = new Professor(matricula, nome, Integer.parseInt(strIdade), Double.parseDouble(strPeso), Boolean.parseBoolean(strAtivo), Double.parseDouble(strOutro));
-                else
-                    p = new Aluno(matricula, nome, Integer.parseInt(strIdade), Double.parseDouble(strPeso), Boolean.parseBoolean(strAtivo), strOutro);
-                //Pessoa p = new Pessoa(matricula, nome, Integer.parseInt(strIdade), Double.parseDouble(strPeso));
-                lcpd.adicionaPessoa(p);
+                String nome = data[0].trim();
+                String telefone = data[1].trim();
+                String cpf = data[2].trim();
+                String endereco = data[3].trim();
+                // Cria um novo Cliente e adiciona ao CadastroDeClientes
+                Cliente cliente = new Cliente(nome, telefone, cpf, endereco);
+                cadastroDeClientes.adicionaCliente(cliente);
             }           
             reader.close();
 
-            updateTables(lcpd);
-
-            
         } catch (Exception e) {
-            System.out.println("Erro ao consumir o arquivo");
+            System.out.println("Erro ao consumir o arquivo de clientes " + e);
+        }
+        
+        try {
+            Path path1 = Paths.get("data_veiculos.dat");
+            reader = Files.newBufferedReader(path1, Charset.forName("utf8"));
+            String line = null;
+            // primeira linha apresenta a ordem dos campos disponiveis
+            line=reader.readLine();
+
+            while((line=reader.readLine())!=null){
+                String data [] = line.split(";");
+                String nome = data[0].trim();
+                String placa = data[1].trim();
+                int limiteDePeso = Integer.parseInt(data[2].trim());
+                int limiteDeVolume = Integer.parseInt(data[3].trim());
+                String tipo = data[4].trim();
+                
+                switch(tipo){
+                    case "Bicicleta":
+                        // Cria uma Bicicleta
+                        Bicicleta bicicleta = new Bicicleta(nome, limiteDePeso, limiteDeVolume);
+                        cadastroDeVeiculos.adicionaVeiculo(bicicleta);
+                        break;
+                    case "Motocicleta":
+                        // Cria um novo Veículo Motocicleta
+                        Motocicleta motocicleta = new Motocicleta(nome, limiteDePeso, limiteDeVolume, placa);
+                        cadastroDeVeiculos.adicionaVeiculo(motocicleta);
+                        break;
+                    case "VeiculoConvencional":
+                        // Cria um novo Veículo Convencional
+                        VeiculoConvencional veiculoConvencional = new VeiculoConvencional(nome, limiteDePeso, limiteDeVolume, placa);
+                        cadastroDeVeiculos.adicionaVeiculo(veiculoConvencional);
+                        break;
+                    case "Caminhao":
+                        // Cria um novo Caminhão
+                        Caminhao caminhao = new Caminhao(nome, limiteDePeso, limiteDeVolume, placa);
+                        cadastroDeVeiculos.adicionaVeiculo(caminhao);
+                        break;
+                    case "CaminhaoRefrigerado":
+                        // Cria um novo Caminhão Refrigerado
+                        CaminhaoRefrigerado caminhaoRefrigerado = new CaminhaoRefrigerado(nome, limiteDePeso, limiteDeVolume, placa);
+                        cadastroDeVeiculos.adicionaVeiculo(caminhaoRefrigerado);
+                        break;
+                    default:
+                        System.out.println("Tipo de veículo desconhecido: " + tipo);
+                }
+            }
+            reader.close();
+
+            updateTables(cadastroDeVeiculos, cadastroDeClientes);
+        } catch (Exception e) {
+            System.out.println("Erro ao consumir o arquivo de Veiculos " + e);
         }
 
     }
 
-    private void updateTables(CadastroDePessoa lcdp){
-        DefaultTableModel dtmG=tableModelGeral;
-        DefaultTableModel dtmP=tableModelProfessor;
-        DefaultTableModel dtmA=tableModelAluno;
+    private void updateTables(CadastroVeiculos lcdv, CadastroClientes lcdc){
+        DefaultTableModel dtmC=tableModelCliente;
+        DefaultTableModel dtmV=tableModelVeiculo;
 
-        dtmG.setNumRows(0);
-        dtmP.setNumRows(0);
-        dtmA.setNumRows(0);
+        dtmC.setNumRows(0);
+        dtmV.setNumRows(0);
 
-        for(Pessoa aux: cdp.pessoal()){
-            Object [] novaLinha = new Object[5];
-            Object [] nlProfessor = new Object[5];          
-            Object [] nlAluno = new Object[5];
+        for(Veiculo aux: lcdv.veiculos()){
+            Object [] nlVeiculo = new Object[4];          
 
-            nlProfessor[0] = nlAluno[0]=novaLinha[1]=aux.getMatricula();
-            nlProfessor[1] = nlAluno[1]=novaLinha[2]=aux.getNome();
-            nlProfessor[2] = nlAluno[2]=novaLinha[3]=aux.getIdade();
-            nlProfessor[3] = nlAluno[3]=novaLinha[4]=aux.getPeso();
-            if(aux instanceof Professor){
-                novaLinha[0]   = "Professor";
-                nlProfessor[4] = ((Professor) aux).getSalario();    
-                dtmP.addRow(nlProfessor);
-                }
-            else{
-                novaLinha[0]   = "Aluno";
-                nlAluno[4]     = ((Aluno) aux).getCurso();
-                dtmA.addRow(nlAluno);
+            nlVeiculo[0] = aux.getNome();
+            if(aux instanceof Bicicleta) {
+                nlVeiculo[1] = ""; // Bicicleta não tem placa
+            } else {
+                nlVeiculo[1] = ((VeiculoConvencional)aux).getPlaca(); // Posso converter para qualquer um dos outros 4 tipos, visto que todos tem placa e contem os mesmo parametros
             }
-            dtmG.addRow(novaLinha);
+            nlVeiculo[2] = aux.getLimiteKG();
+            nlVeiculo[3] = aux.getLimiteVolume();
+            
+            dtmV.addRow(nlVeiculo);
+        }
+
+        for(Cliente aux: lcdc.clientes()){
+            Object [] nlCliente = new Object[4];
+            nlCliente[0] = aux.getNome();
+            nlCliente[1] = aux.getTelefone();
+            nlCliente[2] = aux.getCpf();
+            nlCliente[3] = aux.getEndereco();
+            dtmC.addRow(nlCliente);
         }
         
         System.out.println("Dados foram adicionados na matriz da tabela");

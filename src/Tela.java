@@ -41,24 +41,28 @@ import trabalho.veiculos.CaminhaoRefrigerado;
 import trabalho.veiculos.Motocicleta;
 import trabalho.veiculos.Veiculo;
 import trabalho.veiculos.VeiculoConvencional;
+import trabalho.viagem.CadastroViagens;
 
 public class Tela extends JFrame{
 
     private CadastroClientes cdc;
-    private CadastroVeiculos cdv;     
-    private JTable tblListaCliente, tblListaVeiculo;
-    private DefaultTableModel tableModelCliente, tableModelVeiculo;
-    private JRadioButton jrbCliente, jrbVeiculo;
+    private CadastroVeiculos cdv;
+    private CadastroViagens cdvi;
+    private JTable tblListaCliente, tblListaVeiculo, tblListaViagem;
+    private DefaultTableModel tableModelCliente, tableModelVeiculo, tableModelViagem;
+    private JRadioButton jrbCliente, jrbVeiculo, jrbViagem;
     private CardLayout cardLayoutAplicacao;
     private JPanel jpAplicacao;
     private JTextField tfNome, tfTelefone, tfCPF, tfEndereco;
     private JTextField tfNomeV, tfLimitePeso, tfLimiteVolume, tfPlaca;
+    private JTextField tfPesoViagem, tfVolumeViagem, tfValorAproximado, tfDistanciaViagem;
 
     public Tela() {
         super("Tela de cadastro");
 
         cdc = new CadastroClientes();
         cdv = new CadastroVeiculos();
+        cdvi = new CadastroViagens();
 
         // Construção do layout da tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -180,19 +184,80 @@ public class Tela extends JFrame{
 
         jpVeiculo.add(jpLinhaTipoVeiculo);
 
-        // Adicioma os painéis de Cliente e Veículo ao CardLayout
+        // Criação dos Componentes e Jpanel para a
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        JPanel jpViagem = new JPanel();
+        jpViagem.setLayout(new BoxLayout(jpViagem, BoxLayout.Y_AXIS));
+
+        // Cria um painel para agrupar a Label e o Campo de Texto do Peso do item a ser transportado
+        // e adiciona ao painel principal jpViagem
+        JPanel jpLinhaPeso = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblPeso = new JLabel("Peso: ");
+        tfPesoViagem = new JTextField(50);
+        jpLinhaPeso.add(lblPeso);
+        jpLinhaPeso.add(tfPesoViagem);
+        jpViagem.add(jpLinhaPeso);
+
+        // Cria um painel para agrupar a Label e o Campo de Texto do Volume do item a ser transportado
+        // e adiciona ao painel principal jpViagem
+        JPanel jpLinhaVolume = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblVolume = new JLabel("Volume:");
+        tfVolumeViagem = new JTextField(50);
+        jpLinhaVolume.add(lblVolume);
+        jpLinhaVolume.add(tfVolumeViagem);
+        jpViagem.add(jpLinhaVolume);
+
+        // Cria um painel para agrupar a Label e o Campo de Texto do Valor Aproximado do item a ser transportado
+        // e adiciona ao painel principal jpViagem
+        JPanel jpLinhaValor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblValor = new JLabel("Valor Aproximado:");
+        tfValorAproximado = new JTextField(50);
+        jpLinhaValor.add(lblValor);
+        jpLinhaValor.add(tfValorAproximado);
+        jpViagem.add(jpLinhaValor);
+
+        // Cria um painel para agrupar a Label e o Campo de Texto da distância do item a ser transportado
+        // e adiciona ao painel principal jpViagem
+        JPanel jpLinhaDistancia = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblDistancia = new JLabel("Distância:");
+        tfDistanciaViagem = new JTextField(50);
+        jpLinhaDistancia.add(lblDistancia);
+        jpLinhaDistancia.add(tfDistanciaViagem);
+        jpViagem.add(jpLinhaDistancia);
+
+        // Cria um painel para agrupar a Label e o Checkbox de Urgência do item a ser transportado
+        // e adiciona ao painel principal jpViagem
+        JPanel jpLinhaUrgencia = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblUrgencia = new JLabel("Urgência:");
+        JCheckBox jcbUrgente = new JCheckBox();
+        jpLinhaUrgencia.add(lblUrgencia);
+        jpLinhaUrgencia.add(jcbUrgente);
+        jpViagem.add(jpLinhaUrgencia);
+
+        JPanel jpLinhaSensivelAoFrio = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblSensivelAoFrio = new JLabel("Sensível ao Frio:");
+        JCheckBox jcbSensivelAoFrio = new JCheckBox();
+        jpLinhaSensivelAoFrio.add(lblSensivelAoFrio);
+        jpLinhaSensivelAoFrio.add(jcbSensivelAoFrio);
+        jpViagem.add(jpLinhaSensivelAoFrio);
+
+        // Adiciona os painéis de Cliente, Veículo e Viagem ao CardLayout
         jpAplicacao.add(jpCliente, "CLIENTE");
         jpAplicacao.add(jpVeiculo, "VEICULO");
+        jpAplicacao.add(jpViagem, "VIAGEM");
 
         jrbCliente = new JRadioButton("Cliente");
         jrbCliente.setSelected(true);
         jrbVeiculo = new JRadioButton("Veículo");
+        jrbViagem = new JRadioButton("Viagem");
         ButtonGroup bgTipo = new ButtonGroup();
         bgTipo.add(jrbCliente);
         bgTipo.add(jrbVeiculo);
+        bgTipo.add(jrbViagem);
         JPanel l5 = new JPanel(new FlowLayout());
         l5.add(jrbCliente);
         l5.add(jrbVeiculo);
+        l5.add(jrbViagem);
 
         JCheckBox jcbAtivo = new JCheckBox("Cadastro ativo");
         jcbAtivo.setSelected(true);
@@ -303,7 +368,12 @@ public class Tela extends JFrame{
                     }else{
                         // Cria um novo Cliente e adiciona ao CadastroDeClientes
                         // CPF e endereço podem ser String vazias
-                        Cliente cliente = new Cliente(nome, telefone, cpf, endereco);
+                        Cliente cliente = new Cliente(
+                            nome, 
+                            telefone, 
+                            cpf == null? "" : cpf, // Se o CPF for nulo, atribiu uma string vazia, para fins de consistencia e salvamento do arquivo
+                            endereco == null? "" : endereco
+                        );
                         cdc.adicionaCliente(cliente);
                     }
                 } else if (jrbVeiculo.isSelected()) {
@@ -312,7 +382,9 @@ public class Tela extends JFrame{
                     limitePeso = tfLimitePeso.getText().trim();
                     limiteVolume = tfLimiteVolume.getText().trim();
 
-                    if (nomeV.isEmpty() || placa.isEmpty() || limitePeso.isEmpty() || limiteVolume.isEmpty() || bgTipoVeiculo.getSelection() == null) {
+                    boolean condicaoComBicicleta = nomeV.isEmpty() || !jcbBicicleta.isSelected() || limitePeso.isEmpty() || limiteVolume.isEmpty() || bgTipoVeiculo.getSelection() == null;
+                    boolean condicaoSemBicicletaa = nomeV.isEmpty() || placa.isEmpty() || limitePeso.isEmpty() || limiteVolume.isEmpty() || bgTipoVeiculo.getSelection() == null;
+                    if (condicaoSemBicicletaa && condicaoComBicicleta) {
                         JOptionPane.showMessageDialog(this, "Todos os campos do Veículo devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -528,7 +600,15 @@ public class Tela extends JFrame{
             if(aux instanceof Bicicleta) {
                 nlVeiculo[1] = ""; // Bicicleta não tem placa
             } else {
-                nlVeiculo[1] = ((VeiculoConvencional)aux).getPlaca(); // Posso converter para qualquer um dos outros 4 tipos, visto que todos tem placa e contem os mesmo parametros
+                if(aux instanceof Motocicleta) {
+                    nlVeiculo[1] = ((Motocicleta)aux).getPlaca();
+                } else if(aux instanceof VeiculoConvencional) {
+                    nlVeiculo[1] = ((VeiculoConvencional)aux).getPlaca();
+                } else if(aux instanceof Caminhao) {
+                    nlVeiculo[1] = ((Caminhao)aux).getPlaca();
+                } else if(aux instanceof CaminhaoRefrigerado) {
+                    nlVeiculo[1] = ((CaminhaoRefrigerado)aux).getPlaca();
+                }
             }
             nlVeiculo[2] = aux.getLimiteKG();
             nlVeiculo[3] = aux.getLimiteVolume();

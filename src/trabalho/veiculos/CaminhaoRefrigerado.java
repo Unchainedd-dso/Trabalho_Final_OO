@@ -3,8 +3,8 @@ package trabalho.veiculos;
 public class CaminhaoRefrigerado extends Veiculo {
     private String placa;
 
-    public CaminhaoRefrigerado(int limiteKG, int limiteVolume, String placa) {
-        super(limiteKG, limiteVolume);
+    public CaminhaoRefrigerado(String nome, int limiteKG, int limiteVolume, String placa) {
+        super(nome, limiteKG, limiteVolume);
         this.placa = placa;
     }
 

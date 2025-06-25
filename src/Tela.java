@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Flow;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -36,11 +37,11 @@ public class Tela extends JFrame{
     private CadastroDePessoa cdp;     
     private JTable tblListaGeral, tblListaProfessor, tblListaAluno;
     private DefaultTableModel tableModelGeral, tableModelProfessor, tableModelAluno;
-    private JRadioButton jrbProfessor, jrbAluno;
+    private JRadioButton jrbCliente, jrbVeiculo;
     private CardLayout cardLayoutAplicacao;
     private JPanel jpAplicacao;
-    private JTextField tfMatricula, tfNome, tfIdade, tfPeso, tfCurso;
-    private JTextField tfMatriculaP, tfNomeP, tfIdadeP, tfPesoP, tfSalarioP;
+    private JTextField tfNome, tfTelefone, tfCPF, tfEndereco;
+    private JTextField tfNomeV, tfLimitePeso, tfLimiteVolume, tfPlaca;
 
     public Tela() {
         super("Tela de cadastro");
@@ -50,100 +51,136 @@ public class Tela extends JFrame{
         // Construção do layout da tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-        // Contrucao CardLayout de aluno e professor
+        // Contrucao CardLayout de Cliente Veículos
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         cardLayoutAplicacao = new CardLayout();
         jpAplicacao= new JPanel(cardLayoutAplicacao);
 
-        // Criação dos Componentes e Jpanel para o Aluno
-        JPanel jpAluno = new JPanel();
-        jpAluno.setLayout(new BoxLayout(jpAluno, BoxLayout.Y_AXIS));
+        // Criação dos Componentes e Jpanel para o Cliente
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        JPanel jpCliente = new JPanel();
+        jpCliente.setLayout(new BoxLayout(jpCliente, BoxLayout.Y_AXIS));
 
-        JPanel jpLinhaMatricula = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblMatricula = new JLabel("Matrícula: ");
-        tfMatricula = new JTextField(50);
-        jpLinhaMatricula.add(lblMatricula);
-        jpLinhaMatricula.add(tfMatricula);
-        jpAluno.add(jpLinhaMatricula);
-
+        // Cria um painel para agrupar a Label e o Campo de Texto do nome do cliente
+        // e adiciona ao painel principal jpCliente
         JPanel jpLinhaNome = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblNome = new JLabel("Nome:");
+        JLabel lblNome = new JLabel("Nome: ");
         tfNome = new JTextField(50);
         jpLinhaNome.add(lblNome);
         jpLinhaNome.add(tfNome);
-        jpAluno.add(jpLinhaNome);
+        jpCliente.add(jpLinhaNome);
 
-        JPanel jpLinhaIdade = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblIdade = new JLabel("Idade:");
-        tfIdade = new JTextField(50);
-        jpLinhaIdade.add(lblIdade);
-        jpLinhaIdade.add(tfIdade);
-        jpAluno.add(jpLinhaIdade);
+        // Cria um painel para agrupar a Label e o Campo de Texto do telefone do cliente
+        // e adiciona ao painel principal jpCliente
+        JPanel jpLinhaTelefone = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblTelefone = new JLabel("Telefone:");
+        tfTelefone = new JTextField(50);
+        jpLinhaTelefone.add(lblTelefone);
+        jpLinhaTelefone.add(tfTelefone);
+        jpCliente.add(jpLinhaTelefone);
 
-        JPanel jpLinhaPeso = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblPeso = new JLabel("Peso:");
-        tfPeso = new JTextField(50);
-        jpLinhaPeso.add(lblPeso);
-        jpLinhaPeso.add(tfPeso);
-        jpAluno.add(jpLinhaPeso);
+        // Cria um painel para agrupar a Label e o Campo de Texto do CPF do cliente
+        // e adiciona ao painel principal jpCliente
+        JPanel jpLinhaCPF = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblCPF = new JLabel("CPF:");
+        tfCPF = new JTextField(50);
+        jpLinhaCPF.add(lblCPF);
+        jpLinhaCPF.add(tfCPF);
+        jpCliente.add(jpLinhaCPF);
 
-        JLabel lblCurso = new JLabel("Curso:");
-        tfCurso = new JTextField(50);
-        JPanel jpLinhaCurso = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        jpLinhaCurso.add(lblCurso);
-        jpLinhaCurso.add(tfCurso);
-        jpAluno.add(jpLinhaCurso);
+        // Cria um painel para agrupar a Label e o Campo de Texto do endereço do cliente
+        // e adiciona ao painel principal jpCliente
+        JPanel jpLinhaEndereco = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblEndereco = new JLabel("Endereço:");
+        tfEndereco = new JTextField(50);
+        jpLinhaEndereco.add(lblEndereco);
+        jpLinhaEndereco.add(tfEndereco);
+        jpCliente.add(jpLinhaEndereco);
 
-        // Criação dos Componentes e Jpanel para o Professor
-        JPanel jpProfessor = new JPanel();
-        jpProfessor.setLayout(new BoxLayout(jpProfessor, BoxLayout.Y_AXIS));
+        // Criação dos Componentes e Jpanel para o Veiculo
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        JPanel jpVeiculo = new JPanel();
+        jpVeiculo.setLayout(new BoxLayout(jpVeiculo, BoxLayout.Y_AXIS));
 
-        JPanel jpLinhaMatriculaP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblMatriculaP = new JLabel("Matrícula: ");
-        tfMatriculaP = new JTextField(50);
-        jpLinhaMatriculaP.add(lblMatriculaP);
-        jpLinhaMatriculaP.add(tfMatriculaP);
-        jpProfessor.add(jpLinhaMatriculaP);
+        // Cria um painel para agrupar a Label e o Campo de Texto do nome do veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaNomeV = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblNomeV = new JLabel("Nome:");
+        tfNomeV = new JTextField(50);
+        jpLinhaNomeV.add(lblNomeV);
+        jpLinhaNomeV.add(tfNomeV);
+        jpVeiculo.add(jpLinhaNomeV);
 
-        JPanel jpLinhaNomeP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblNomeP = new JLabel("Nome:");
-        tfNomeP = new JTextField(50);
-        jpLinhaNomeP.add(lblNomeP);
-        jpLinhaNomeP.add(tfNomeP);
-        jpProfessor.add(jpLinhaNomeP);
+        // Cria um painel para agrupar a Label e o Campo de Texto da placa do veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaPlaca = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblPlaca = new JLabel("Placa: ");
+        tfPlaca = new JTextField(50);
+        jpLinhaPlaca.add(lblPlaca);
+        jpLinhaPlaca.add(tfPlaca);
+        jpVeiculo.add(jpLinhaPlaca);
 
-        JPanel jpLinhaIdadeP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblIdadeP = new JLabel("Idade:");
-        tfIdadeP = new JTextField(50);
-        jpLinhaIdadeP.add(lblIdadeP);
-        jpLinhaIdadeP.add(tfIdadeP);
-        jpProfessor.add(jpLinhaIdadeP);
+        // Cria um painel para agrupar a Label e o Campo de Texto do limite de peso do veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaLimitePeso = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblLimitePeso = new JLabel("Limite de Peso:");
+        tfLimitePeso = new JTextField(50);
+        jpLinhaLimitePeso.add(lblLimitePeso);
+        jpLinhaLimitePeso.add(tfLimitePeso);
+        jpVeiculo.add(jpLinhaLimitePeso);
 
-        JPanel jpLinhaPesoP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblPesoP = new JLabel("Peso:");
-        tfPesoP = new JTextField(50);
-        jpLinhaPesoP.add(lblPesoP);
-        jpLinhaPesoP.add(tfPesoP);
-        jpProfessor.add(jpLinhaPesoP);
+        // Cria um painel para agrupar a Label e o Campo de Texto do limite de volume do veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaLimiteVolume = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblLimiteVolume = new JLabel("Limite de Volume:");
+        tfLimiteVolume = new JTextField(50);
+        jpLinhaLimiteVolume.add(lblLimiteVolume);
+        jpLinhaLimiteVolume.add(tfLimiteVolume);
+        jpVeiculo.add(jpLinhaLimiteVolume);
 
-        JPanel jpLinhaSalarioP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblSalarioP = new JLabel("Salario:");
-        tfSalarioP = new JTextField(50);
-        jpLinhaSalarioP.add(lblSalarioP);
-        jpLinhaSalarioP.add(tfSalarioP);
-        jpProfessor.add(jpLinhaSalarioP);
+        // Cria um painel para agrupar a Label e os Checkboxes do tipo de veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaTipoVeiculo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblTipoVeiculo = new JLabel("Tipo de Veículo:");
+        JRadioButton jcbBicicleta = new JRadioButton("B");
+        JRadioButton jcbMotocicleta = new JRadioButton("M");
+        JRadioButton jcbVeiculoConvencional = new JRadioButton("VC");
+        JRadioButton jcbCaminhao = new JRadioButton("C");
+        JRadioButton jcbCaminhaoRefrigerado = new JRadioButton("CR");
 
-        jpAplicacao.add(jpProfessor, "PROFESSOR");
-        jpAplicacao.add(jpAluno, "ALUNO");
+        // Cria um ButtonGroup para agrupar os JRadioButtons
+        // Isso garante que apenas um dos tipos de veículo possam ser selecionados por vez
+        ButtonGroup bgTipoVeiculo = new ButtonGroup();
+        bgTipoVeiculo.add(jcbBicicleta);
+        bgTipoVeiculo.add(jcbMotocicleta);
+        bgTipoVeiculo.add(jcbVeiculoConvencional);
+        bgTipoVeiculo.add(jcbCaminhao);
+        bgTipoVeiculo.add(jcbCaminhaoRefrigerado);
+        
+        // Adiciona a Label
+        jpLinhaTipoVeiculo.add(lblTipoVeiculo);
+        // Adiciona as radioboxes à linha de tipo de veículo
+        jpLinhaTipoVeiculo.add(jcbBicicleta);
+        jpLinhaTipoVeiculo.add(jcbMotocicleta);
+        jpLinhaTipoVeiculo.add(jcbVeiculoConvencional);
+        jpLinhaTipoVeiculo.add(jcbCaminhao);
+        jpLinhaTipoVeiculo.add(jcbCaminhaoRefrigerado);
 
-        jrbProfessor = new JRadioButton("Professor");
-        jrbProfessor.setSelected(true);
-        jrbAluno = new JRadioButton("Aluno");
+        jpVeiculo.add(jpLinhaTipoVeiculo);
+
+        // Adicioma os painéis de Cliente e Veículo ao CardLayout
+        jpAplicacao.add(jpCliente, "CLIENTE");
+        jpAplicacao.add(jpVeiculo, "VEICULO");
+
+        jrbCliente = new JRadioButton("Cliente");
+        jrbCliente.setSelected(true);
+        jrbVeiculo = new JRadioButton("Veículo");
         ButtonGroup bgTipo = new ButtonGroup();
-        bgTipo.add(jrbProfessor);
-        bgTipo.add(jrbAluno);
+        bgTipo.add(jrbCliente);
+        bgTipo.add(jrbVeiculo);
         JPanel l5 = new JPanel(new FlowLayout());
-        l5.add(jrbProfessor);
-        l5.add(jrbAluno);
+        l5.add(jrbCliente);
+        l5.add(jrbVeiculo);
 
         JCheckBox jcbAtivo = new JCheckBox("Cadastro ativo");
         jcbAtivo.setSelected(true);
@@ -221,29 +258,27 @@ public class Tela extends JFrame{
         // Definição da interação na tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-        jrbProfessor.addActionListener(
+        jrbCliente.addActionListener(
             al -> {
-                System.out.println("Ação do botão Professor");
-                cardLayoutAplicacao.show(jpAplicacao, "PROFESSOR");
+                System.out.println("Ação do botão Cliente");
+                cardLayoutAplicacao.show(jpAplicacao, "CLIENTE");
                 // Limpa os campos
-                tfMatriculaP.setText("");
-                tfNomeP.setText("");
-                tfIdadeP.setText("");
-                tfPesoP.setText("");
-                tfSalarioP.setText("");
+                tfNome.setText("");
+                tfTelefone.setText("");
+                tfCPF.setText("");
+                tfEndereco.setText("");
             }
         );
 
-        jrbAluno.addActionListener(
+        jrbVeiculo.addActionListener(
             al -> {
-                System.out.println("Ação do botão Aluno");
-                cardLayoutAplicacao.show(jpAplicacao, "ALUNO");
+                System.out.println("Ação do botão Veículo");
+                cardLayoutAplicacao.show(jpAplicacao, "VEICULO");
                 // Limpa os campos
-                tfMatricula.setText("");
-                tfNome.setText("");
-                tfIdade.setText("");
-                tfPeso.setText("");
-                tfCurso.setText("");
+                tfNomeV.setText("");
+                tfPlaca.setText("");
+                tfLimitePeso.setText("");
+                tfLimiteVolume.setText("");
             }
         );
 
@@ -251,64 +286,46 @@ public class Tela extends JFrame{
             al -> {
                 System.out.println("Iniciando a ação do botão");
 
-                String matricula, nome, strIdade, strPeso, strExtra;
-
-                if (jrbProfessor.isSelected()) {
-                    matricula = tfMatriculaP.getText().trim();
-                    nome = tfNomeP.getText().trim();
-                    strIdade = tfIdadeP.getText().trim();
-                    strPeso = tfPesoP.getText().trim();
-                    strExtra = tfSalarioP.getText().trim();
-                } else {
-                    matricula = tfMatricula.getText().trim();
-                    nome = tfNome.getText().trim();
-                    strIdade = tfIdade.getText().trim();
-                    strPeso = tfPeso.getText().trim();
-                    strExtra = tfCurso.getText().trim();
-                }
+                String nome, telefone, cpf, endereco;
+                String nomeV, placa, limitePeso, limiteVolume;
 
                 Boolean cadastroAtivo = jcbAtivo.isSelected();
 
-                System.out.println("Dados capturados");
+                if (jrbCliente.isSelected()) {
+                    nome = tfNome.getText().trim();
+                    telefone = tfTelefone.getText().trim();
+                    cpf = tfCPF.getText().trim();
+                    endereco = tfEndereco.getText().trim();
 
-                // validação do dado capturado
-                if((matricula.length()==0)||(nome.length()==0)||(strIdade.length()==0)||(strPeso.length()==0)||(strExtra.length()==0)) {
-                    JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                Integer idade=0;
-                try {
-                    idade = Integer.parseInt(strIdade);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "O campo 'Idade' deve ser um número inteiro.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                Double peso=0.0;
-                try {
-                    peso = Double.parseDouble(strPeso);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "O campo 'Peso' deve ser um número.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-    
-                System.out.println("Os dados são válidos");
-
-                // criação do objeto
-                Pessoa p;
-                try {
-                    if(jrbProfessor.isSelected()) {
-                        double salario = Double.parseDouble(strExtra);
-                        p = new Professor(matricula, nome, idade, peso, cadastroAtivo, salario);
-                    } else {
-                        p = new Aluno(matricula, nome, idade, peso, cadastroAtivo, strExtra);
+                    if (nome.isEmpty() || telefone.isEmpty() || cpf.isEmpty() || endereco.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Todos os campos do Cliente devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
-                    cdp.adicionaPessoa(p);
-                    updateTables(cdp);
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "O campo 'Salário' deve ser um número.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+
+                    // Aqui você pode criar e adicionar um objeto Cliente, se existir
+                    // Exemplo:
+                    // Cliente cliente = new Cliente(nome, telefone, cpf, endereco, cadastroAtivo);
+                    // cdp.adicionaPessoa(cliente);
+
+                } else if (jrbVeiculo.isSelected()) {
+                    nomeV = tfNomeV.getText().trim();
+                    placa = tfPlaca.getText().trim();
+                    limitePeso = tfLimitePeso.getText().trim();
+                    limiteVolume = tfLimiteVolume.getText().trim();
+
+                    if (nomeV.isEmpty() || placa.isEmpty() || limitePeso.isEmpty() || limiteVolume.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Todos os campos do Veículo devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Aqui você pode criar e adicionar um objeto Veiculo, se existir
+                    // Exemplo:
+                    // Veiculo veiculo = new Veiculo(nomeV, placa, limitePeso, limiteVolume, cadastroAtivo);
+                    // cdp.adicionaPessoa(veiculo);
+
                 }
+
+                updateTables(cdp);
             }
         );
 

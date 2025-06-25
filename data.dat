@@ -1,4 +1,4 @@
-#tipo;matricula;nome;idade;peso
+#tipo;matricula;nome;idade;peso;ativo;extra
 p;10;Edson;48;105.0;true;3500.0
 a;11;Sílvia;45;65.0;true;Ciência da Computação
 a;12;Francisco;12;76.0;true;1234.0

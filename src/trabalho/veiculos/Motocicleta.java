@@ -3,8 +3,8 @@ package trabalho.veiculos;
 public class Motocicleta extends Veiculo {
     private String placa;
 
-    public Motocicleta(int limiteKG, int limiteVolume, String placa) {
-        super(limiteKG, limiteVolume);
+    public Motocicleta(String nome, int limiteKG, int limiteVolume, String placa) {
+        super(nome, limiteKG, limiteVolume);
         this.placa = placa;
     }
 

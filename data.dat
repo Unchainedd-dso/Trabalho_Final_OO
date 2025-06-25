@@ -1,0 +1,6 @@
+#tipo;matricula;nome;idade;peso
+p;10;Edson;48;105.0;true;3500.0
+a;11;Sílvia;45;65.0;true;Ciência da Computação
+a;12;Francisco;12;76.0;true;1234.0
+a;00325438;Paulo de Freitas Marsiglia Junior;23;57.0;true;Ciência da Computação
+p;00325438;Paulo de Freitas Marsiglia Junior;23;57.0;false;1234.0

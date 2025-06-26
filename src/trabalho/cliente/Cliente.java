@@ -15,6 +15,23 @@ public class Cliente {
         this.endereco = endereco;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj){
+            return true;
+        }
+        if (!(obj instanceof Cliente)) {
+            return false;
+        }
+        Cliente cliente = (Cliente) obj;
+        return telefone.equals(cliente.telefone);
+    }
+
+    @Override
+    public int hashCode() {
+        return telefone.hashCode();
+    }
+
     public String getNome() {
         return nome;
     }

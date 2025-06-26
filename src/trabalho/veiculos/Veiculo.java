@@ -11,6 +11,19 @@ public abstract class Veiculo {
         this.limiteVolume = limiteVolume;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Veiculo veiculo = (Veiculo) obj;
+        return nome.equals(veiculo.nome);
+    }
+
+    @Override
+    public int hashCode() {
+        return nome.hashCode();
+    }
+
     public String getNome() {
         return nome;
     }

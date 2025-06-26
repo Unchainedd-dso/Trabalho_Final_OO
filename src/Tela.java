@@ -42,12 +42,13 @@ import trabalho.veiculos.Motocicleta;
 import trabalho.veiculos.Veiculo;
 import trabalho.veiculos.VeiculoConvencional;
 import trabalho.viagem.CadastroViagens;
+import trabalho.viagem.Viagem;
 
 public class Tela extends JFrame{
 
-    private CadastroClientes cdc;
-    private CadastroVeiculos cdv;
-    private CadastroViagens cdvi;
+    private CadastroClientes cadastroDeClientes;
+    private CadastroVeiculos cadastroDeVeiculos;
+    private CadastroViagens cadastroDeViagens;
     private JTable tblListaCliente, tblListaVeiculo, tblListaViagem;
     private DefaultTableModel tableModelCliente, tableModelVeiculo, tableModelViagem;
     private JRadioButton jrbCliente, jrbVeiculo, jrbViagem;
@@ -60,9 +61,9 @@ public class Tela extends JFrame{
     public Tela() {
         super("Tela de cadastro");
 
-        cdc = new CadastroClientes();
-        cdv = new CadastroVeiculos();
-        cdvi = new CadastroViagens();
+        cadastroDeClientes = new CadastroClientes();
+        cadastroDeVeiculos = new CadastroVeiculos();
+        cadastroDeViagens = new CadastroViagens();
 
         // Construção do layout da tela
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -241,6 +242,24 @@ public class Tela extends JFrame{
         jpLinhaSensivelAoFrio.add(jcbSensivelAoFrio);
         jpViagem.add(jpLinhaSensivelAoFrio);
 
+        // Cria um painel para agrupar a Label e o Campo do telefone do cliente
+        // e adiciona ao painel principal jpCliente
+        JPanel jpLinhaCliente = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblCliente = new JLabel("Telefone Cliente:");
+        JTextField tfCliente = new JTextField(50);
+        jpLinhaCliente.add(lblCliente);
+        jpLinhaCliente.add(tfCliente);
+        jpViagem.add(jpLinhaCliente);
+
+        // Cria um painel para agrupar a Label e o Campo do nome do veículo
+        // e adiciona ao painel principal jpVeiculo
+        JPanel jpLinhaVeiculo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblVeiculo = new JLabel("Nome Veículo:");
+        JTextField tfVeiculo = new JTextField(50);
+        jpLinhaVeiculo.add(lblVeiculo);
+        jpLinhaVeiculo.add(tfVeiculo);
+        jpViagem.add(jpLinhaVeiculo);
+
         // Adiciona os painéis de Cliente, Veículo e Viagem ao CardLayout
         jpAplicacao.add(jpCliente, "CLIENTE");
         jpAplicacao.add(jpVeiculo, "VEICULO");
@@ -284,7 +303,18 @@ public class Tela extends JFrame{
         tblListaVeiculo.setPreferredScrollableViewportSize(new Dimension(300, 50));
         tblListaVeiculo.setFillsViewportHeight(true);
         JScrollPane spTableVeiculo = new JScrollPane(tblListaVeiculo);
-        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=      
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= 
+        
+        // Codificação da tabela Viagens para garantir dinamicidade
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        String [] columnNamesViagem = {"Peso", "Volume", "Preço do Produto", "Distância", "Urgente", "Sensível ao Frio", "Telefone Cliente", "Nome Veículo", "Preço"};
+        tableModelViagem = new DefaultTableModel(columnNamesViagem, 0);
+
+        tblListaViagem = new JTable(tableModelViagem);
+        tblListaViagem.setPreferredScrollableViewportSize(new Dimension(300, 50));
+        tblListaViagem.setFillsViewportHeight(true);
+        JScrollPane spTableViagem = new JScrollPane(tblListaViagem);
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=   
 
         // Cria tabs
         JTabbedPane tbCadastros = new JTabbedPane();
@@ -292,6 +322,8 @@ public class Tela extends JFrame{
         tbCadastros.addTab("Clientes", spTableCliente);
         // Tab Veículos
         tbCadastros.addTab("Veículos", spTableVeiculo);
+        // Tab Viagens
+        tbCadastros.addTab("Viagens", spTableViagem);
 
         this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
         this.add(jpAplicacao);
@@ -302,7 +334,7 @@ public class Tela extends JFrame{
         this.add(tbCadastros);
 
         // Carrega os dados dos arquivos já presentes depois da inicialização de TableModelCliente e TableModelVeiculo
-        carregaDadosDoArquivo(cdc, cdv);
+        carregaDadosDoArquivo(cadastroDeClientes, cadastroDeVeiculos, cadastroDeViagens);
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         // Elaboração de um menu inicial
@@ -345,6 +377,20 @@ public class Tela extends JFrame{
             }
         );
 
+        jrbViagem.addActionListener(
+            al -> {
+                System.out.println("Ação do botão Viagem");
+                cardLayoutAplicacao.show(jpAplicacao, "VIAGEM");
+                // Limpa os campos
+                tfPesoViagem.setText("");
+                tfVolumeViagem.setText("");
+                tfValorAproximado.setText("");
+                tfDistanciaViagem.setText("");
+                tfCliente.setText("");
+                tfVeiculo.setText("");
+            }
+        );
+
         btnAdicionar.addActionListener( 
             al -> {
                 System.out.println("Iniciando a ação do botão");
@@ -374,7 +420,7 @@ public class Tela extends JFrame{
                             cpf == null? "" : cpf, // Se o CPF for nulo, atribiu uma string vazia, para fins de consistencia e salvamento do arquivo
                             endereco == null? "" : endereco
                         );
-                        cdc.adicionaCliente(cliente);
+                        cadastroDeClientes.adicionaCliente(cliente);
                     }
                 } else if (jrbVeiculo.isSelected()) {
                     nomeV = tfNomeV.getText().trim();
@@ -392,23 +438,23 @@ public class Tela extends JFrame{
                         if(jcbBicicleta.isSelected()){
                             // Cria uma Bicicleta
                             Bicicleta bicicleta = new Bicicleta(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume));
-                            cdv.adicionaVeiculo(bicicleta);
+                            cadastroDeVeiculos.adicionaVeiculo(bicicleta);
                         } else if(jcbMotocicleta.isSelected()){
                             // Cria um novo Veículo Motocicleta
                             Motocicleta motocicleta = new Motocicleta(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
-                            cdv.adicionaVeiculo(motocicleta);
+                            cadastroDeVeiculos.adicionaVeiculo(motocicleta);
                         } else if(jcbVeiculoConvencional.isSelected()){
                             // Cria um novo Veículo Convencional
                             VeiculoConvencional veiculoConvencional = new VeiculoConvencional(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
-                            cdv.adicionaVeiculo(veiculoConvencional);
+                            cadastroDeVeiculos.adicionaVeiculo(veiculoConvencional);
                         } else if(jcbCaminhao.isSelected()){
                             // Cria um novo Caminhão
                             Caminhao caminhao = new Caminhao(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
-                            cdv.adicionaVeiculo(caminhao);
+                            cadastroDeVeiculos.adicionaVeiculo(caminhao);
                         } else if(jcbCaminhaoRefrigerado.isSelected()){
                             // Cria um novo Caminhão Refrigerado
                             CaminhaoRefrigerado caminhaoRefrigerado = new CaminhaoRefrigerado(nomeV, Integer.parseInt(limitePeso), Integer.parseInt(limiteVolume), placa);
-                            cdv.adicionaVeiculo(caminhaoRefrigerado);
+                            cadastroDeVeiculos.adicionaVeiculo(caminhaoRefrigerado);
                         }
                     }
 
@@ -416,10 +462,40 @@ public class Tela extends JFrame{
                     // Exemplo:
                     // Veiculo veiculo = new Veiculo(nomeV, placa, limitePeso, limiteVolume, cadastroAtivo);
                     // cdp.adicionaPessoa(veiculo);
+                }else if(jrbViagem.isSelected()){
+                    Double peso = Double.parseDouble(tfPesoViagem.getText().trim());
+                    Double volume = Double.parseDouble(tfVolumeViagem.getText().trim());
+                    Double valorAproximado = Double.parseDouble(tfValorAproximado.getText().trim());
+                    Double distancia = Double.parseDouble(tfDistanciaViagem.getText().trim());
+                    String telefoneCliente = tfCliente.getText().trim();
+                    String nomeVeiculo = tfVeiculo.getText().trim();
+                    boolean urgente = jcbUrgente.isSelected();
+                    boolean sensivelAoFrio = jcbSensivelAoFrio.isSelected();
 
+                    // Verifica se os campos obrigatórios estão preenchidos
+                    if (peso == null || volume == null || valorAproximado == null || distancia == null || telefoneCliente.isEmpty() || nomeVeiculo.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Todos os campos da Viagem devem ser preenchidos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }else if(cadastroDeClientes.buscaClientePorTelefone(telefoneCliente) == null || cadastroDeVeiculos.buscaVeiculoPorNome(nomeVeiculo) == null){
+                        // Se o telefone do cliente não existir no cadastro de clientes
+                        JOptionPane.showMessageDialog(this, "Telefone do cliente não encontrado ou Veiculo não encontrado.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }else if(volume > cadastroDeVeiculos.buscaVeiculoPorNome(nomeVeiculo).getLimiteVolume()){
+                        JOptionPane.showMessageDialog(this, "O volume da carga excede o limite do veículo escolhido.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                    }else if(peso > cadastroDeVeiculos.buscaVeiculoPorNome(nomeVeiculo).getLimiteKG()){
+                        JOptionPane.showMessageDialog(this, "O peso da carga excede o limite do veículo escolhido.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                    }else {
+                        // Procura na lista, utilizando do número de telefone, o cliente
+                        Cliente cliente = cadastroDeClientes.buscaClientePorTelefone(telefoneCliente);
+                        // Procura na lista, utilizando do nome do veículo, o veículo
+                        Veiculo veiculo = cadastroDeVeiculos.buscaVeiculoPorNome(nomeVeiculo);
+                        // Cria uma nova Viagem e adiciona ao CadastroDeViagens
+                        Viagem viagem = new Viagem(peso, volume, valorAproximado, distancia, urgente, sensivelAoFrio, cliente, veiculo, Viagem.valorViagem(distancia, peso, urgente, sensivelAoFrio, veiculo));
+                        cadastroDeViagens.adicionarViagem(viagem);
+                    }
                 }
 
-                updateTables(cdv, cdc);
+                updateTables(cadastroDeVeiculos, cadastroDeClientes, cadastroDeViagens);
             }
         );
 
@@ -459,7 +535,7 @@ public class Tela extends JFrame{
     private void salvarEmArquivoVeiculos() throws IOException{
         PrintWriter pw = new PrintWriter("data_veiculos.dat");
         pw.println("#nome;placa;limiteDePeso;limiteDeVolume;tipo");
-        for(Veiculo v: cdv.veiculos()){
+        for(Veiculo v: cadastroDeVeiculos.veiculos()){
             if(v instanceof Bicicleta)
                 // Bicicleta não tem placa
                 pw.println(v.getNome()+";"+";"+v.getLimiteKG()+";"+v.getLimiteVolume()+";Bicicleta");
@@ -478,8 +554,17 @@ public class Tela extends JFrame{
     private void salvarEmArquivoCliente() throws IOException{
         PrintWriter pw = new PrintWriter("data_clientes.dat");
         pw.println("#nome;telefone;cpf;endereco");
-        for(Cliente c: cdc.clientes()){
+        for(Cliente c: cadastroDeClientes.clientes()){
             pw.println(c.getNome()+";"+c.getTelefone()+";"+c.getCpf()+";"+c.getEndereco());
+        }           
+        pw.close();
+    }
+
+    private void salvarEmArquivoViagem() throws IOException{
+        PrintWriter pw = new PrintWriter("data_viagens.dat");
+        pw.println("#peso;volume;valorAproximadoCarga;distancia;urgencia;sensivelAoFrio;cliente;veiculo;preco");
+        for(Viagem v: cadastroDeViagens.viagens()){
+            pw.println(v.getPeso()+";"+v.getVolume()+";"+v.getValorAproximadoCarga()+";"+v.getDistancia()+";"+v.isUrgencia()+";"+v.isSensivelAoFrio()+";"+v.getCliente().getTelefone()+";"+v.getVeiculo().getNome() +";"+v.getPreco());
         }           
         pw.close();
     }
@@ -495,18 +580,24 @@ public class Tela extends JFrame{
                 } catch (Exception error) {
                     System.out.println("Erro ao salvar os dados dos clientes no arquivo");
                 }
-            } else if(jrbVeiculo.isSelected()){
+            }else if(jrbVeiculo.isSelected()){
                 try {
                     salvarEmArquivoVeiculos();
                 } catch (Exception error) {
                     System.out.println("Erro ao salvar os dados dos veículos no arquivo");
+                }
+            }else if(jrbViagem.isSelected()){
+                try {
+                    salvarEmArquivoViagem();
+                } catch (Exception error) {
+                    System.out.println("Erro ao salvar os dados das viagens no arquivo");
                 }
             }
             System.exit(opcao);
         }
     }
 
-    private void carregaDadosDoArquivo(CadastroClientes cadastroDeClientes, CadastroVeiculos cadastroDeVeiculos) {
+    private void carregaDadosDoArquivo(CadastroClientes cadastroDeClientes, CadastroVeiculos cadastroDeVeiculos, CadastroViagens cadastroDeViagens) {
 
         BufferedReader reader;
         try {
@@ -578,22 +669,54 @@ public class Tela extends JFrame{
                 }
             }
             reader.close();
-
-            updateTables(cadastroDeVeiculos, cadastroDeClientes);
+            updateTables(cadastroDeVeiculos, cadastroDeClientes, cadastroDeViagens);
         } catch (Exception e) {
             System.out.println("Erro ao consumir o arquivo de Veiculos " + e);
+        }
+        try{
+            Path path1 = Paths.get("data_viagens.dat");
+            reader = Files.newBufferedReader(path1, Charset.forName("utf8"));
+            String line = null;
+            // primeira linha apresenta a ordem dos campos disponiveis
+            line=reader.readLine();
+
+            while((line=reader.readLine())!=null){
+                String[] data = line.split(";");
+                double peso = Double.parseDouble(data[0]);
+                double volume = Double.parseDouble(data[1]);
+                double valorAproximadoCarga = Double.parseDouble(data[2]);
+                double distancia = Double.parseDouble(data[3]);
+                boolean urgente = Boolean.parseBoolean(data[4]);
+                boolean sensivelAoFrio = Boolean.parseBoolean(data[5]);
+                String telefoneCliente = data[6];
+                String nomeVeiculo = data[7];
+                double preco = Double.parseDouble(data[8]);
+                
+                // Busca o cliente e o veículo
+                Cliente cliente = cadastroDeClientes.buscaClientePorTelefone(telefoneCliente);
+                Veiculo veiculo = cadastroDeVeiculos.buscaVeiculoPorNome(nomeVeiculo);
+                // Verificação extra, verifica se o arquivo não fo
+                Viagem viagem = new Viagem(peso, volume, valorAproximadoCarga, distancia, urgente, sensivelAoFrio, cliente, veiculo, preco);
+                cadastroDeViagens.adicionarViagem(viagem);
+            }           
+            updateTables(cadastroDeVeiculos, cadastroDeClientes, cadastroDeViagens);
+            reader.close();
+        } catch (Exception e) {
+            System.out.println("Erro ao consumir o arquivo de Viagens " + e);
         }
 
     }
 
-    private void updateTables(CadastroVeiculos lcdv, CadastroClientes lcdc){
+    private void updateTables(CadastroVeiculos lcadastroDeVeiculos, CadastroClientes lcadastroDeClientes, CadastroViagens lcadastroDeViagens) {
         DefaultTableModel dtmC=tableModelCliente;
         DefaultTableModel dtmV=tableModelVeiculo;
+        DefaultTableModel dtmVi=tableModelViagem;
 
         dtmC.setNumRows(0);
         dtmV.setNumRows(0);
+        dtmVi.setNumRows(0);
 
-        for(Veiculo aux: lcdv.veiculos()){
+        for(Veiculo aux: lcadastroDeVeiculos.veiculos()){
             Object [] nlVeiculo = new Object[4];          
 
             nlVeiculo[0] = aux.getNome();
@@ -616,13 +739,29 @@ public class Tela extends JFrame{
             dtmV.addRow(nlVeiculo);
         }
 
-        for(Cliente aux: lcdc.clientes()){
+        for(Cliente aux: lcadastroDeClientes.clientes()){
             Object [] nlCliente = new Object[4];
             nlCliente[0] = aux.getNome();
             nlCliente[1] = aux.getTelefone();
             nlCliente[2] = aux.getCpf();
             nlCliente[3] = aux.getEndereco();
+            
             dtmC.addRow(nlCliente);
+        }
+
+        for(Viagem aux: lcadastroDeViagens.viagens()){
+            Object [] nlViagem = new Object[9];
+            nlViagem[0] = aux.getPeso();
+            nlViagem[1] = aux.getVolume();
+            nlViagem[2] = aux.getValorAproximadoCarga();
+            nlViagem[3] = aux.getDistancia();
+            nlViagem[4] = aux.isUrgencia();
+            nlViagem[5] = aux.isSensivelAoFrio();
+            nlViagem[6] = aux.getCliente().getTelefone();
+            nlViagem[7] = aux.getVeiculo().getNome();
+            nlViagem[8] = Viagem.valorViagem(aux.getDistancia(), aux.getPeso(), aux.isUrgencia(), aux.isSensivelAoFrio(), aux.getVeiculo());
+
+            dtmVi.addRow(nlViagem);
         }
         
         System.out.println("Dados foram adicionados na matriz da tabela");
@@ -632,8 +771,4 @@ public class Tela extends JFrame{
     public static void main(String[] args) {
         Tela tl = new Tela();
     }
-
-
-
-    
 }

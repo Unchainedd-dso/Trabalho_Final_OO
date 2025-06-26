@@ -1,12 +1,21 @@
 package trabalho.cliente;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 
 public class CadastroClientes {
-    LinkedList<Cliente> listaDeClientes;
+    HashSet<Cliente> listaDeClientes;
 
     public CadastroClientes() {
-        listaDeClientes = new LinkedList<>();
+        listaDeClientes = new HashSet<>();
+    }
+
+    public Cliente buscaClientePorTelefone(String telefone) {
+        for (Cliente cliente : listaDeClientes) {
+            if (cliente.getTelefone().equals(telefone)) {
+                return cliente;
+            }
+        }
+        return null; // Retorna null se não encontrar o cliente
     }
 
     public void adicionaCliente(Cliente c){

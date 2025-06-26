@@ -13,7 +13,7 @@ public class CadastroViagens {
         this.viagens.add(viagem);
     }
 
-    public Iterable<Viagem> getViagens() {
+    public Iterable<Viagem> viagens() {
         return viagens;
     }
 
